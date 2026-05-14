@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SensorSample {
+  id        String   @id @default(uuid())
+  deviceId  String
+  timestamp DateTime
+  x         Float
+  y         Float
+  z         Float
+  magnitude Float?
+  pga       Float?
+  label     Int?
+
+  @@index([deviceId, timestamp])
+  @@map("sensor_samples")
+}
+
+model EarthquakeEvent {
+  id        String   @id @default(uuid())
+  time      DateTime
+  magnitude Float
+  level     String
+  location  String
+  depth     String
+  lat       String
+  lon       String
+
+  @@index([time(sort: Desc)])
+  @@map("earthquake_events")
+}
+
+model PredictionRun {
+  id          String   @id @default(uuid())
+  timestamp   DateTime @default(now())
+  probability Float
+  magnitude   Float
+  confidence  Float
+  region      String
+  coords      String
+  risk        String
+  features    Json?
+
+  @@index([timestamp(sort: Desc)])
+  @@map("prediction_runs")
+}
+
+model Station {
+  id     String @id @default(uuid())
+  lat    Float
+  lon    Float
+  region String?
+  city   String?
+  zone   String
+  status String
+  pga    Float  @default(0)
+
+  @@map("stations")
+}
