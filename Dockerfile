@@ -22,6 +22,8 @@ RUN npm prune --omit=dev
 RUN npm install prisma@5.22.0 --omit=optional --no-audit --no-fund
 
 # --- Run: minimal runtime + migrations ---
+# Listen port: defaults to 6010 (see ENV PORT). If you see Bad Gateway, the proxy must
+# target the same port the process listens on (often set PORT in the platform to 6010).
 FROM node:20-alpine AS runner
 
 RUN apk add --no-cache openssl libc6-compat wget
@@ -29,7 +31,7 @@ RUN apk add --no-cache openssl libc6-compat wget
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=6010
 
 # Non-root user
 RUN addgroup --system --gid 1001 nodejs \
@@ -45,9 +47,9 @@ RUN chmod +x docker-entrypoint.sh
 
 USER nestjs
 
-EXPOSE 3000
+EXPOSE 6010
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:3000/api/events/recent?n=1 || exit 1
+  CMD sh -c 'wget -qO- "http://127.0.0.1:${PORT:-6010}/api/events/recent?n=1" || exit 1'
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

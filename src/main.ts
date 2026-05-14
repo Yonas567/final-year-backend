@@ -79,7 +79,7 @@ async function bootstrap() {
     .addTag('predict', 'Heuristic prediction runs from recent `SensorSample` rows')
     .addTag('ingest', 'Single or batch accelerometer samples; broadcasts `sensor` on WebSocket')
     .addServer('/', 'Same origin as Swagger (recommended)')
-    .addServer('http://localhost:3000', 'Local dev (adjust port if needed)')
+    .addServer('http://localhost:6010', 'Local dev (default app port)')
     .build();
 
   const document = SwaggerModule.createDocument(app, swagger, {
@@ -111,7 +111,7 @@ async function bootstrap() {
     },
   });
 
-  const port = parseInt(process.env.PORT ?? '3000', 10);
+  const port = parseInt(process.env.PORT ?? '6010', 10);
   await app.listen(port);
 }
 bootstrap();
